@@ -43,7 +43,6 @@ export async function POST(request){
         
         await writeFile(filepath, buffer);
         
-        console.log(`File saved: ${filepath}`);
         indexTheDocument(filepath);
         return NextResponse.json({message: 'File uploaded successfully', filename});
         
@@ -54,5 +53,3 @@ export async function POST(request){
     }
 } 
 
-// const filePath = './icici_bank.pdf'
-// indexTheDocument(filePath);

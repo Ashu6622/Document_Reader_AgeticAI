@@ -1,6 +1,6 @@
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import {RecursiveCharacterTextSplitter} from "@langchain/textsplitters";
-import { PineconeStore } from "@langchain/pinecone";
+import { PineconeStore } from "@langchain/community/vectorstores/pinecone";
 import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
 // import { OpenAIEmbeddings } from "@langchain/openai";
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/hf_transformers";
@@ -30,8 +30,6 @@ export async function indexTheDocument(filePath){
     const loader = new PDFLoader(filePath, {splitPages:false});
     const docs = await loader.load();
 
-    // console.log(docs[0]);
-
     const textSplitter = new RecursiveCharacterTextSplitter({
         chunkSize: 500,
         chunkOverlap: 100,
@@ -47,8 +45,7 @@ export async function indexTheDocument(filePath){
     })
 
     await vectorStore.addDocuments(documents);
-    // console.log(documents);
-    // console.log(texts.length);
+
     console.log("✅ Document indexed successfully!");
 
 }
