@@ -13,36 +13,43 @@
  * 4. Congratulations:
  */
 
-import {indexTheDocument} from '../prepareDoc.js'
-import {NextResponse} from 'next/server'
-import {writeFile} from 'fs/promises'
-import path from 'path'
+import { indexTheDocument } from "../prepareDoc.js";
+import { NextResponse } from "next/server";
+import { writeFile } from "fs/promises";
+import path from "path";
 
-export async function POST(request){
+export async function POST(request) {
+  try {
+    const formData = await request.formData();
+    const file = formData.get("file");
 
-    try{
-        const formData = await request.formData();
-        const file = formData.get('file');
-        
-        if (!file) {
-            return NextResponse.json({error: 'No file uploaded'}, {status: 400});
-        }
-
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        
-        const filename = `${Date.now()}_${file.name}`;
-        const filepath = path.join(process.cwd(), 'upload', filename);
-        
-        await writeFile(filepath, buffer);
-        
-        indexTheDocument(filepath);
-        return NextResponse.json({message: 'File uploaded successfully', filename});
-        
+    if (!file) {
+      return NextResponse.json(
+        { error: "No file uploaded" },
+        { status: 400 }
+      );
     }
-    catch(error){
-        console.log(error);
-        return NextResponse.json({error: 'Upload failed'}, {status: 500});
-    }
-} 
 
+    // Convert to buffer
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // Use /tmp instead of project folder
+    const filename = `${Date.now()}_${file.name}`;
+    const filepath = path.join("/tmp", filename);
+
+    // Write file to /tmp (works on Vercel serverless functions)
+    await writeFile(filepath, buffer);
+
+    // Process PDF immediately
+    await indexTheDocument(filepath);
+
+    return NextResponse.json({
+      message: "File uploaded and processed successfully",
+      filename,
+    });
+  } catch (error) {
+    console.error("Upload failed:", error);
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+  }
+}

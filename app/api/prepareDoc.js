@@ -2,12 +2,8 @@ import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import {RecursiveCharacterTextSplitter} from "@langchain/textsplitters";
 import { PineconeStore } from "@langchain/community/vectorstores/pinecone";
 import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
-// import { OpenAIEmbeddings } from "@langchain/openai";
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/hf_transformers";
 
-// const embeddings = new OpenAIEmbeddings({
-//   model: "text-embedding-3-small",
-// });
 
 const embeddings = new HuggingFaceTransformersEmbeddings({
   modelName: "Xenova/all-MiniLM-L6-v2", // free, small & fast
