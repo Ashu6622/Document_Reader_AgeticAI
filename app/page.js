@@ -14,7 +14,7 @@ function Page(){
 
     try{
         setisLoading(true);
-        const response = await fetch(`/api/uploadDoc`, {
+        const response = await fetch(`https://pdf-reader-kappa-one.vercel.app/api/uploadDoc`, {
         method:'POST',
         body: selectFile
       })
