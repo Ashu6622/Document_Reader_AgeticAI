@@ -25,7 +25,7 @@ function Page(){
         setQues("");
 
         try {
-            const response = await fetch('https://pdf-reader-kappa-one.vercel.app/api/chat', {
+            const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'
