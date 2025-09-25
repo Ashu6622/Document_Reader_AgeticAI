@@ -15,7 +15,7 @@
 
 import {indexTheDocument} from '../prepareDoc.js'
 import {NextResponse} from 'next/server'
-import {writeFile, readdir, unlink} from 'fs/promises'
+import {writeFile} from 'fs/promises'
 import path from 'path'
 
 export async function POST(request){
@@ -26,13 +26,6 @@ export async function POST(request){
         
         if (!file) {
             return NextResponse.json({error: 'No file uploaded'}, {status: 400});
-        }
-
-        // Delete all existing files in upload folder
-        const uploadDir = path.join(process.cwd(), 'upload');
-        const existingFiles = await readdir(uploadDir);
-        for (const existingFile of existingFiles) {
-            await unlink(path.join(uploadDir, existingFile));
         }
 
         const bytes = await file.arrayBuffer();
