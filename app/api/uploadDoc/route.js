@@ -15,8 +15,15 @@
 
 import { indexTheDocument } from "../prepareDoc.js";
 import { NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
+import { writeFile, readdir, unlink } from "fs/promises";
 import path from "path";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(request) {
   try {
@@ -30,23 +37,49 @@ export async function POST(request) {
       );
     }
 
-    // Convert to buffer
+    // Delete all existing files in upload folder
+    // const uploadDir = path.join(process.cwd(), 'upload');
+    // try {
+    //   const existingFiles = await readdir(uploadDir);
+    //   for (const existingFile of existingFiles) {
+    //     await unlink(path.join(uploadDir, existingFile));
+    //   }
+    // } catch (error) {
+    //   // Upload folder might not exist, ignore error
+    // }
+
+    // // Convert to buffer
+    // const bytes = await file.arrayBuffer();
+    // const buffer = Buffer.from(bytes);
+
+    // // Save to upload folder
+    // const filename = `${Date.now()}_${file.name}`;
+    // const filepath = path.join(uploadDir, filename);
+
+    // // Write file to upload folder
+    // await writeFile(filepath, buffer);
+
     const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const buffer = Buffer.from(bytes); 
 
-    // Use /tmp instead of project folder
-    const filename = `${Date.now()}_${file.name}`;
-    const filepath = path.join("/tmp", filename);
+   
+    const result = await cloudinary.uploader.upload(
+      `data:application/pdf;base64,${buffer.toString("base64")}`,
+      {
+        resource_type: "raw",   // since it's PDF
+        folder: "pdf_uploads",  // optional folder
+      }
+    );
 
-    // Write file to /tmp (works on Vercel serverless functions)
-    await writeFile(filepath, buffer);
+    // return NextResponse.json({ url: result.secure_url });
+    console.log(result.secure_url )
+  
 
     // Process PDF immediately
-    await indexTheDocument(filepath);
+    await indexTheDocument(result.secure_url);
 
     return NextResponse.json({
       message: "File uploaded and processed successfully",
-      filename,
     });
   } catch (error) {
     console.error("Upload failed:", error);
