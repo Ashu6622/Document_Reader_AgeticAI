@@ -1,22 +1,5 @@
-/**
- * Implementation plan
- * Stage 1: Indexing
- * 1. Load the document ✅
- * 2. Chuck the document ✅
- * 3. Generate the vector embeddings ✅
- * 4. Store the vector embedding - Vector database ✅
- * 
- * Srage 2: Using the chatbot
- * 1. Setup LLM 
- * 2. Add retrieval step
- * 3. Pass input + relevant information to LLM
- * 4. Congratulations:
- */
-
 import { indexTheDocument } from "../prepareDoc.js";
 import { NextResponse } from "next/server";
-import { writeFile, readdir, unlink } from "fs/promises";
-import path from "path";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
@@ -37,32 +20,10 @@ export async function POST(request) {
       );
     }
 
-    // Delete all existing files in upload folder
-    // const uploadDir = path.join(process.cwd(), 'upload');
-    // try {
-    //   const existingFiles = await readdir(uploadDir);
-    //   for (const existingFile of existingFiles) {
-    //     await unlink(path.join(uploadDir, existingFile));
-    //   }
-    // } catch (error) {
-    //   // Upload folder might not exist, ignore error
-    // }
-
-    // // Convert to buffer
-    // const bytes = await file.arrayBuffer();
-    // const buffer = Buffer.from(bytes);
-
-    // // Save to upload folder
-    // const filename = `${Date.now()}_${file.name}`;
-    // const filepath = path.join(uploadDir, filename);
-
-    // // Write file to upload folder
-    // await writeFile(filepath, buffer);
-
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes); 
 
-   
+  //  Upload to Cloudinary
     const result = await cloudinary.uploader.upload(
       `data:application/pdf;base64,${buffer.toString("base64")}`,
       {
