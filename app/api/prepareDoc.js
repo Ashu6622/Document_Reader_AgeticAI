@@ -2,6 +2,7 @@ import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import {RecursiveCharacterTextSplitter} from "@langchain/textsplitters";
 import { PineconeStore } from "@langchain/pinecone";
 import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
+
 // import { HuggingFaceInferenceEmbeddings } from "@langchain/community/embeddings/hf";
 // import { HfInference } from "@huggingface/inference";
 import { pipeline } from "@xenova/transformers";
@@ -40,8 +41,7 @@ const pinecone = new PineconeClient();
 const pineconeIndex = pinecone.Index("company-bot");
 
 // Custom embedding functions using Xenova
-const embeddings = {
-  embedQuery: async (text) => {
+const embeddings = {  embedQuery: async (text) => {
     const model = await getExtractor();
     const output = await model(text, { pooling: "mean", normalize: true });
     return Array.from(output.data);
